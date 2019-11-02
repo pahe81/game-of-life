@@ -1,0 +1,59 @@
+body {
+    background-color: black;
+    text-align: center;
+    color: white;
+    font-family: 'Roboto', sans-serif;
+}
+h1 {
+    color: white;
+    font-weight: 100;
+    font-family: 'Liu Jian Mao Cao', cursive;
+    font-size: 70px;
+    margin: 20px;
+}
+.buttons {
+    display: flex;
+    justify-content: center;
+}
+button {
+    border: none;
+    border-radius: 4px 4px 0px 0px;
+    padding: 5px 11px;
+    margin: 2px;
+    background-color: dimgray;
+    color: white;
+    font-size: 14px;
+    outline:none;
+}
+button:hover {
+    background-color: lightgoldenrodyellow;
+    color: black;
+}
+table {
+    border-collapse: collapse; 
+    border-spacing: 0;
+    background-color: #ccad00;
+    margin: 10px auto;
+    outline: double 5px white;
+}
+tr, td {
+    height: 8px;
+    width: 8px;
+    border: none;
+    border-radius: 30%;
+}
+#alive {
+    background-color: #ffd700;
+}
+#dead {
+    background-color: #ccad00;
+}
+#born {
+    background-color: #ffe34e;
+}
+#died {
+    background-color: #b79b00;
+}
+p {
+    margin: 5px;
+}

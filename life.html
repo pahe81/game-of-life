@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Life</title>
+    <link rel="stylesheet" type="text/css" href="life.css">
+    <link href="https://fonts.googleapis.com/css?family=Liu+Jian+Mao+Cao|Roboto:300&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Game of Life</h1>
+    <div class="buttons">
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+        <button id="small">20x40</button>
+        <button id="medium">40x80</button>
+        <button id="large">50x100</button>
+        <button id="random">Randomize</button>
+    </div>
+    <table class="tbl" id="grid"></table>
+    <div>
+        <p>Live cells: <a id="live"></a></p>
+        <p>Generations: <a id="gens">1</a></p>
+    </div>
+<script src="life.js"></script>      
+</body>
+</html>
