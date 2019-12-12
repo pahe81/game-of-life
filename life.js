@@ -3,20 +3,31 @@ let arr = [];
 let nextArr = [];
 //define starting size
 let rows = 20;
-let cols = rows*2;
+let cols = rows;
 let generations;
 let liveCells;
+let fps = 10;  //set speed of animation
+let t0, t1, tt = 0, c; //variables for measuring efficiency
 let grid = document.getElementById("grid");
 let live = document.getElementById("live");
 let gens = document.getElementById("gens");
-window.onload = () => {drawTable();}
+let perf = document.getElementById("perf");
+window.onload = () => {drawTable("random");}
 
-let drawTable = () => {
-    generations = 1;
+let drawTable = (r) => {
+    generations = 0;
     liveCells = 0;
+    tt = 0; 
+    live.innerHTML = liveCells;
     gens.innerHTML = generations;
+    perf.innerHTML = tt.toFixed(2) + " ms"
+    if(r == "random"){
     //fill array randomly with 0s and 1s
-	for (let i = 0; i < rows; i++) {arr[i] = Array.from({length: cols}, () => Math.floor(Math.random() * 2));}
+    for (let i = 0; i < rows; i++) {arr[i] = Array.from({length: cols}, () => Math.floor(Math.random() * 2));}
+    } else {
+    //fill array with zeros
+    for (let i = 0; i < rows; i++) {arr[i] = Array.from({length: cols}, () => 0);}
+    }
     //generate empty 2Darray for next generation
     for (let i = 0; i < rows; i++) {nextArr[i] = Array.from({length: cols});}
     //if grid has any children, remove them
@@ -31,6 +42,7 @@ let drawTable = () => {
 		for (let j = 0; j < cols; j++){
 			let cell = document.createElement("td");
 			tablerow.appendChild(cell);
+            cell.addEventListener("click", function(e) {drawCells(e, i, j)});
 			if (arr[i][j] == 1) {
 				cell.setAttribute("id", "alive");
                 live.innerHTML = ++liveCells;
@@ -41,6 +53,7 @@ let drawTable = () => {
 	}
 }
 let nextGeneration = () => {
+    c = 0; //number of comparisons
     //check neighbouring cells
     for (let i = 0; i < rows; i++){
         for (let j = 0; j < cols; j++){
@@ -59,17 +72,21 @@ let nextGeneration = () => {
             if (arr[i][j] == 0 && sum == 3){
                 nextArr[i][j] = 1;
                 grid.rows[i].cells[j].setAttribute("id", "born");
-                live.innerHTML = ++liveCells;
+                live.innerHTML = liveCells++;
+                c++; //count the number of if-else if checks
             }else if (arr[i][j] == 1 && (sum < 2 || sum > 3)){
                 nextArr[i][j] = 0;
                 grid.rows[i].cells[j].setAttribute("id", "died");
                 live.innerHTML = --liveCells;
+                c += 2;
             }else if (arr[i][j] == 1 && (sum == 2 || sum == 3)){
                 nextArr[i][j] = arr[i][j];
                 grid.rows[i].cells[j].setAttribute("id", "alive");
+                c += 3;
             }else if (arr[i][j] == 0 && sum != 3){
                 nextArr[i][j] = arr[i][j];
                 grid.rows[i].cells[j].setAttribute("id", "dead");
+                c += 4;
             }
         }
     }
@@ -83,23 +100,51 @@ let nextGeneration = () => {
 //loop to make it alive 
 let continueAnimation = false;
 let tick = () => {
+    //if (generations == 30) continueAnimation = false; //break for measurements
     if(continueAnimation){
-    let fps = 10; //set speed on animation
         setTimeout(function(){
+            t0 = performance.now();
             nextGeneration();
+            t1 = performance.now();
+            tt += (t1 -t0); //get time spent on calculating next generations
+            perf.innerHTML = tt.toFixed(2) + " ms"
             myReq = requestAnimationFrame(tick);
         }, 1000/fps);
     }
     //add generation to counter
-    gens.innerHTML = ++generations;
+    gens.innerHTML = generations++;
+}
+//function to color/uncolor cells on click
+let drawCells = (e, i, j) => {
+    let cell = e.target;
+    let idtype;
+    if(cell.getAttribute("id") == "alive") {
+        idtype = "dead";
+        arr[i][j] = 0;
+        live.innerHTML = --liveCells;
+       } else {
+        idtype = "alive";
+        arr[i][j] = 1;
+        live.innerHTML = ++liveCells;
+       }
+    cell.setAttribute("id", idtype);
+}
+//set speed according to slider value
+let getRangeValue = (val) => {
+    fps = val;
 }
 //functions for buttons
 let start = () => {continueAnimation = true; tick();}
 let stop = () => {continueAnimation = false; tick();}
-let setSize = (r, c) => {rows = r; cols = c; drawTable()}
+let setSize = (n) => {
+    if(!Number.isInteger(n)) {
+        alert("Give size as an integer.");
+    } else {
+    rows = n; cols = n; drawTable()}
+}
+//adding eventlisteners
 document.getElementById("start").addEventListener("click", start);
 document.getElementById("stop").addEventListener("click", stop);
-document.getElementById("small").addEventListener("click", function() {setSize(20, 40)});
-document.getElementById("medium").addEventListener("click", function() {setSize(40, 80)});
-document.getElementById("large").addEventListener("click", function() {setSize(50, 100)});
-document.getElementById("random").addEventListener("click", function() {drawTable()});
+document.getElementById("setsize").addEventListener("click", function() {let n = parseInt(document.getElementById("size").value); setSize(n)});
+document.getElementById("clear").addEventListener("click", function() {drawTable()});
+document.getElementById("random").addEventListener("click", function() {drawTable("random")});
